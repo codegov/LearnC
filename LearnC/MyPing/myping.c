@@ -14,10 +14,7 @@ struct sockaddr_in dest_addr_; // 目标地址
 void statistics(int signo)
 {
     printf("\n--------------------PING statistics-------------------\n");
-    printf("%d packets transmitted, %d received , %%%d lost\n",
-           send_count_,
-           received_count_,
-           (send_count_-received_count_)/send_count_*100);
+    printf("%d packets transmitted, %d received , %%%d lost\n", send_count_, received_count_, (send_count_-received_count_)/send_count_*100);
     close(sockfd_);
     exit(1);
 }
@@ -72,12 +69,7 @@ int send_packet()
 {
     int packetsize;
     packetsize = pack(send_count_); /*设置ICMP报头*/
-    if( sendto(sockfd_,
-               send_packet_,
-               packetsize,
-               0,
-               (struct sockaddr *)&dest_addr_,
-               sizeof(dest_addr_) ) < 0)
+    if( sendto(sockfd_, send_packet_, packetsize, 0, (struct sockaddr *)&dest_addr_, sizeof(dest_addr_) ) < 0)
     {
         perror("sendto error");
         return -1;
@@ -96,12 +88,7 @@ int recv_packet()
 
     alarm(MAX_WAIT_TIME);
 
-    while((n = recvfrom(sockfd_,
-                        recv_packet_,
-                        sizeof(recv_packet_),
-                        0,
-                        (struct sockaddr *)&from_addr_,
-                        &fromlen) ) < 0)
+    while((n = (int)recvfrom(sockfd_, recv_packet_, sizeof(recv_packet_), 0, (struct sockaddr *)&from_addr_, &fromlen) ) < 0)
     {
         if(errno == EINTR) continue;
 
@@ -112,7 +99,6 @@ int recv_packet()
     if(unpack(recv_packet_, n) == -1) return -2;
 
     return 0;
-
 }
 /*剥去ICMP报头*/
 int unpack(char *buf,int len)
@@ -148,9 +134,11 @@ int unpack(char *buf,int len)
                ip->ip_ttl,
                rtt);
         return 0;
-    }
-    else
+    } else
+    {
+        printf("received failed");
         return -1;
+    }
 }
 
 

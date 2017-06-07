@@ -58,27 +58,28 @@ int main(int argc, const char * argv[])
     
     /*获取main的进程id,用于设置ICMP的标志符*/
     pid_ = getpid();
-    printf("PING %s(%s): %d bytes data in ICMP packets.\n",
-           s,
-           inet_ntoa(dest_addr_.sin_addr),
-           data_len_);
+    printf("PING %s(%s): %d bytes data in ICMP packets.\n", s, inet_ntoa(dest_addr_.sin_addr), data_len_);
     
     // 循环次数是发送/接收的包的数量
     for(int i = 0; i < MAX_NO_PACKETS; ++i)
     {
         if(-1 == send_packet())  /*发送1个ICMP报文*/
         {
+            printf("send error break\n");
             break;
         }
         ++send_count_;
+        printf("send=%d ", send_count_);
         
         if(-1 == recv_packet())  /*接收1个ICMP报文*/
         {
+            printf("received error break\n");
             break;
         }
         ++received_count_;
+        printf("received=%d \n", received_count_);
         
-        //  sleep(1); /*每隔一秒发送一个ICMP报文*/
+//        sleep(1); /*每隔一秒发送一个ICMP报文*/
     }
     
     statistics(SIGALRM); /*进行统计*/
